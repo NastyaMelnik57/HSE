@@ -1,0 +1,30 @@
+Multichar_Symbols +Inf
+
+LEXICON Root
+
+Verb;
+
+LEXICON Verb
+
+yaz Suff;
+yazɪl Suff;
+bur Suff;
+burul Suff;
+giy Suff;
+giyin Suff;
+seviş Suff;
+görün Suff;
+görüş Suff;
+öpüş Suff;
+doğ Suff;
+doğur Suff;
+bat Suff;
+piş Suff;
+pişir Suff;
+geҫ Suff;
+düş Suff;
+tut Suff;
+
+LEXICON Suff
+
++Inf:^k #;
