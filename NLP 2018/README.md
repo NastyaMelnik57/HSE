@@ -26,22 +26,19 @@
 ## Статистики
 1) **LogLikelihood**  
 
-$Loglikelihood = 2*((SpecC(w)*ln(\frac{SpecC(w)}{E_1})) + (RefC(w)*ln(\frac{RefC(w)}{E_2})))$  
-$E_i = \frac{N_i*\sum(O_i)}{\sum(N_i)}$  
+![equation](http://latex.codecogs.com/gif.latex?Loglikelihood%20=%202*((SpecC(w)*ln(\frac{SpecC(w)}{E_1}))%20+%20(RefC(w)*ln(\frac{RefC(w)}{E_2})))) 
 
-$w$ - слово  
-$SpecC(w)$ –  частота слова в тематическом корпусе;  
-$RefC(w)$ –  частота слова в контрастном корпусе;  
+![equation](http://latex.codecogs.com/gif.latex?E{i}%20=%20\frac{N{i}%20\sum_{i}(O{i})}{\sum_{i}(N{i})})  
 
 2) **Weirdness**
 
-Weirdness (w) =  \frac{SpecC(w)}{|SpeC|} * {\frac{|RefC|}{RefC(w)}}
+![equation](http://latex.codecogs.com/gif.latex?Weirdness%20(w)%20=%20%20\frac{SpecC(w)}{|SpeC|}%20*%20{\frac{|RefC|}{RefC(w)}})
 
-w - слово  
-SpecC(w) –  частота слова в тематическом корпусе  
-|SpecC| – объём тематического корпуса  
-RefC(w) –  частота слова в контрастном корпусе  
-|RefC| – объём контрастного корпуса  
+![equation](http://latex.codecogs.com/gif.latex?w) - слово  
+![equation](http://latex.codecogs.com/gif.latex?SpecC(w)) –  частота слова в тематическом корпусе;  
+![equation](http://latex.codecogs.com/gif.latex?RefC(w)) –  частота слова в контрастном корпусе;  
+![equation](http://latex.codecogs.com/gif.latex?|SpecC|) – объём тематического корпуса  
+![equation](http://latex.codecogs.com/gif.latex?|RefC|) – объём контрастного корпуса  
 
 см. [Лукашевич, Логачев]
 
