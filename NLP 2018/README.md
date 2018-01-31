@@ -26,21 +26,24 @@
 ## Статистики
 1) **LogLikelihood**  
 
-![equation](http://latex.codecogs.com/gif.latex?Loglikelihood%20=%202*((SpecC(w)*ln(\frac{SpecC(w)}{E_1}))%20+%20(RefC(w)*ln(\frac{RefC(w)}{E_2})))) 
+![equation](http://latex.codecogs.com/gif.latex?Loglikelihood={2}\cdot\left({{SpecC(w)}\cdot{ln\left(\frac{SpecC(w)}{E_1}\right)}+{RefC(w)}\cdot{ln\left(\frac{RefC(w)}{E_2}\right)}}\right)) 
 
-![equation](http://latex.codecogs.com/gif.latex?E{i}%20=%20\frac{N{i}%20\sum_{i}(O{i})}{\sum_{i}(N{i})})  
+![equation](http://latex.codecogs.com/gif.latex?E{i}%20=%20\frac{{|C{i}|}\cdot{\sum_{w}(C{i}(w))}}{\sum_{i}(|C{i}|)})  
+  
+![equation](http://latex.codecogs.com/gif.latex?E{i}) – ожидаемая частота слова в корпусе i  
+![equation](http://latex.codecogs.com/gif.latex?|C{i}|) – объём корпуса i  
+![equation](http://latex.codecogs.com/gif.latex?C{i}(w)) – абсолютная частота слова w в корпусе ![equation](http://latex.codecogs.com/gif.latex?C{i})
 
-2) **Weirdness**
+2) **Weirdness**  
+см. [Лукашевич, Логачев]  
 
 ![equation](http://latex.codecogs.com/gif.latex?Weirdness%20(w)%20=%20%20\frac{SpecC(w)}{|SpeC|}%20*%20{\frac{|RefC|}{RefC(w)}})
 
 ![equation](http://latex.codecogs.com/gif.latex?w) - слово  
-![equation](http://latex.codecogs.com/gif.latex?SpecC(w)) –  частота слова в тематическом корпусе;  
-![equation](http://latex.codecogs.com/gif.latex?RefC(w)) –  частота слова в контрастном корпусе;  
+![equation](http://latex.codecogs.com/gif.latex?SpecC(w)) –  абсолютная частота слова в тематическом корпусе;  
+![equation](http://latex.codecogs.com/gif.latex?RefC(w)) –  абсолютная частота слова в контрастном корпусе;  
 ![equation](http://latex.codecogs.com/gif.latex?|SpecC|) – объём тематического корпуса  
 ![equation](http://latex.codecogs.com/gif.latex?|RefC|) – объём контрастного корпуса  
-
-см. [Лукашевич, Логачев]
 
 ## Результаты  
 
@@ -51,7 +54,8 @@
 ## Эксперимент
 Вручную выделенные ключевые слова: брак, Бог, жена, муж, Христос, вечность, любовь, таинство, грех. 
 50% из топа-10 были выделены вручную, 50% не вошло в топ-10 из выделенных вручную.  
-  
+Вывод: автоматически выделенный топ ключевых слов наполовину не соответствует ожиданиям.  
+
 **Таблица 1. Статистические характеристики первых 10 и последних 10 keywords согласно LogLikelihood метрике.**
 
 w_i|Тип|CountSpec|CountRefC|LogLikelihood|Ранг1|Weirdness|Ранг2
