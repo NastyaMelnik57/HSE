@@ -28,7 +28,7 @@
 
 ![equation](http://latex.codecogs.com/gif.latex?Loglikelihood={2}\cdot\left({{SpecC(w)}\cdot{ln\left(\frac{SpecC(w)}{E_1}\right)}+{RefC(w)}\cdot{ln\left(\frac{RefC(w)}{E_2}\right)}}\right)) 
 
-![equation](http://latex.codecogs.com/gif.latex?E{i}%20=%20\frac{{|C{i}|}\cdot{\sum_{w}(C{i}(w))}}{\sum_{i}(|C{i}|)})  
+![equation](http://latex.codecogs.com/gif.latex?E{i}%20=%20\frac{{|C{i}|}\cdot{\sum_{w}C{i}(w)}}{\sum_{i}|C{i}|})  
   
 ![equation](http://latex.codecogs.com/gif.latex?E{i}) – ожидаемая частота слова в корпусе i  
 ![equation](http://latex.codecogs.com/gif.latex?|C{i}|) – объём корпуса i  
