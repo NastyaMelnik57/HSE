@@ -37,7 +37,7 @@
 2) **Weirdness**  
 см. [Лукашевич, Логачев]  
 
-![equation](http://latex.codecogs.com/gif.latex?Weirdness%20(w)%20=%20%20\frac{SpecC(w)}{|SpeC|}%20*%20{\frac{|RefC|}{RefC(w)}})
+![equation](http://latex.codecogs.com/gif.latex?Weirdness%20(w)%20=%20%20{\frac{SpecC(w)}{|SpeC|}%20}\cdot{%20{\frac{|RefC|}{RefC(w)}}})
 
 ![equation](http://latex.codecogs.com/gif.latex?w) - слово  
 ![equation](http://latex.codecogs.com/gif.latex?SpecC(w)) –  абсолютная частота слова в тематическом корпусе;  
