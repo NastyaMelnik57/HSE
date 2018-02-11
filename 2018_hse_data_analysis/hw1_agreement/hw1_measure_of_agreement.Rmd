@@ -14,8 +14,8 @@ library("ramify")
 ```
 
 ### 1.1
-```{r}
-zilo_classes <- read_csv("Documents/HSE/R/2018/hw1_1_zilo_class.csv")
+```{r, results='markup'}
+zilo_classes <- read_csv("hw1_1_zilo_class.csv")
 
 zilo_classes %>%
   distinct(stimulus, stimulus_source) %>%
