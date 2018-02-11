@@ -25,7 +25,7 @@ zilo_classes %>%
 
 ### 1.2
 преобразуем датасет
-```{r}
+```{r, results='markup'}
 zilo_classes %>% 
   select(s_id, stimulus, translation_ru, class) %>% 
   spread(key = s_id, value = class) ->
@@ -64,7 +64,7 @@ kappam.fleiss(zilo_classes_irr_format[,-c(1:2)])
 
 ### 2.1
 ```{r}
-verbs <- read_csv("Documents/HSE/R/2018/hw1_2_verbs.csv")
+verbs <- read_csv("hw1_2_verbs.csv")
 verbs %>%
   distinct(SubjectCode) %>%
   summarise(n = n())
