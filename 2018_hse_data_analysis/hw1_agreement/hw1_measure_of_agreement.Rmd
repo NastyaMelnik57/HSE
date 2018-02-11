@@ -1,0 +1,120 @@
+---
+title: "hw1_measure_of_agreement"
+author: "Melnik Anastasia"
+date: "11 02 2018"
+output: html_document
+---
+
+### 0
+```{r}
+library(readr)
+library(tidyverse)
+library("irr")
+library("ramify")
+```
+
+### 1.1
+```{r}
+zilo_classes <- read_csv("Documents/HSE/R/2018/hw1_1_zilo_class.csv")
+
+zilo_classes %>%
+  distinct(stimulus, stimulus_source) %>%
+  group_by(stimulus_source) %>%
+  summarise(n = n())
+```
+
+### 1.2
+преобразуем датасет
+```{r}
+zilo_classes %>% 
+  select(s_id, stimulus, translation_ru, class) %>% 
+  spread(key = s_id, value = class) ->
+  zilo_classes_irr_format
+head(zilo_classes_irr_format)
+```
+посчитаем процент общего согласия всех спикеров
+```{r}
+agree(zilo_classes_irr_format[,-c(1:2)])
+```
+
+### 1.3
+посчитаем каппу Каэнна для 2-х спикеров
+```{r}
+zilo_classes_2s <- zilo_classes_irr_format[,c(9, 13)]
+kappa2(zilo_classes_2s)
+```
+
+### 1.4
+посчитаем каппу Фляйса для всех спикеров
+```{r}
+kappam.fleiss(zilo_classes_irr_format[,-c(1:2)])
+```
+
+### 1.5
+>В зиловском диалекте андийского языка существует два класса для неодушевленных предметов. 
+>Чтоб проверить наличие вариативности в отнесению к тому или иному классу заимствованой и исконной лексики, 
+>проверили эксперимент.
+>В эксперименте по классификации 89 слов (50 исконных и 39 заимствованных) приняли участие 16 человек.
+>Процент полного согласия участников составил 73%. В 27% случаев наблюдаются расхождения. 
+>В отличие от процента полного согласия, каппа Фляйса учитывает возможность случайного совпадения 
+>или случайного расхождения, и равна 0.839. Для оценки согласия любых двух отдельно взятых участников мы пользуемся 
+>мерой каппа Каэнна. К примеру, для участников 7 и 11 она равна 0.843. Обе каппы можно интепетировать как мера близости
+>наблюдаемой и полной согласованностями между оценками с учетом случайных оценок. И полную согласованность, и согласованность
+>между 7 и 11 участниками можно считать хорошими, поскольку значения обеих капп превышают 0.75.
+
+### 2.1
+```{r}
+verbs <- read_csv("Documents/HSE/R/2018/hw1_2_verbs.csv")
+verbs %>%
+  distinct(SubjectCode) %>%
+  summarise(n = n())
+```
+
+### 2.2
+```{r}
+verbs %>%
+  group_by(WordType, Gender) %>% 
+  summarise(mean = mean(GivenScore))
+```
+
+### 2.3
+преобразуем датасет
+```{r}
+verbs %>% 
+  select(SubjectCode, Stimulus, GivenScore) %>% 
+  spread(key = SubjectCode, value = GivenScore) ->
+  verbs_irr_format
+head(verbs_irr_format)
+dim(verbs_irr_format)
+```
+
+удалим пропущенные значения, если есть
+```{r}
+verbs_irr_format <- na.omit(verbs_irr_format)
+dim(verbs_irr_format)
+```
+
+посчитаем процент общего согласия всех спикеров
+```{r}
+agree(verbs_irr_format[,-1])
+```
+
+### 2.4
+посчитаем каппу Фляйса
+```{r}
+kappam.fleiss(verbs_irr_format[,-1])
+```
+
+### 2.5
+посчитаем ICC
+```{r}
+icc(verbs_irr_format[,-1], model = "twoway", type = "agreement")
+```
+
+### 2.6
+составим матрицу попарной корреляции Кендала ответов всех участников (не считая пар с самим собой)
+```{r}
+kendall <- as.table(cor(verbs_irr_format[, -1], method = "kendall"))
+kendall[lower.tri(kendall, diag = TRUE)] <- NA
+tibble(min_kendall = min(kendall[!is.na(kendall)]), max_kendall = max(kendall[!is.na(kendall)]))
+```
