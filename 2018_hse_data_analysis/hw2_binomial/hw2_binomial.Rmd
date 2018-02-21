@@ -1,0 +1,109 @@
+---
+title: "hw2_binomial"
+author: "Melnik Anastasia"
+date: "17 02 2018"
+output: html_document
+---
+
+```{r, results='markup'}
+library(readr)
+library(tidyverse)
+library(mosaic)
+```
+### 1.1
+получим результаты эксперимента и ожидаемую вероятность успеха
+```{r, results='markup'}
+binomial <- read_csv("hw2_binomial.csv")
+number_of_trials <- as.numeric(binomial['n'])
+number_of_successes <- as.numeric(binomial['k'])
+prior <- as.numeric(binomial['prior'])
+```
+проведем биномиальный тест (проверяет, насколько разница между количеством удачных и неудачных событий случайна)
+```{r, results='markup'}
+binomial_test <- binom.test(number_of_successes, number_of_trials, prior)
+binomial_test
+```
+
+### 1.2
+Смоделируем эксперимент и симулируем его выполнение 1000 раз
+```{r, results='markup'}
+set.seed(42)
+do(1000)*
+  sum(sample(x = 1:0, 
+             size = number_of_trials, 
+             prob = c(prior, 1 - prior), 
+             replace = TRUE)) ->
+  simulations
+
+simulations %>% 
+  mutate(greater = sum >= number_of_successes) %>% 
+  count(greater)
+```
+нарисуем график распределения симуляций
+```{r, results='markup'}
+simulations %>% 
+  ggplot(aes(sum))+
+  geom_density(fill = "lightblue")+
+  geom_vline(xintercept = number_of_successes, linetype = 2)+
+  theme_bw()+
+  labs(title = "Распределение 1000 симуляций с параметрами n = 116, p = 0.403")
+```
+### 1.3
+Посчитаем среднее апостериорного распределения (после эксперимента), 
+используя prior как среднее априорного распределения (до эксперимента)
+```{r, results='markup'}
+alpha_prior = prior * number_of_trials
+beta_prior = (1 - prior) * number_of_trials
+
+alpha_data <- number_of_successes
+beta_data <- number_of_trials - number_of_successes
+
+alpha_post <- alpha_prior + alpha_data
+beta_post <- beta_prior + beta_data
+
+mean1 = alpha_post/(alpha_post+beta_post)
+mean1
+```
+Визуализируем распределения с полученными кэоффициентами
+```{r, results='markup'}
+x <- seq(0, 1, length = 100)
+data_frame(p = rep(x, 3),
+           density = c(dbeta(x, alpha_prior, beta_prior),
+                       dbeta(x, alpha_data, beta_data),
+                       dbeta(x, alpha_post, beta_post)),
+           type = rep(c("prior", "likelihood", "posterior"), each = 100))%>% 
+  ggplot(aes(x = p, y = density, color = type))+
+  geom_line()+
+  theme_bw()
+```
+
+### 1.4
+Посчитаем среднее апостериорного распределения (после эксперимента), 
+используя неинформативное априорное распределение с α=1 и β=1
+```{r, results='markup'}
+alpha_prior = 1
+beta_prior = 1
+
+alpha_post <- alpha_prior + alpha_data
+beta_post <- beta_prior + beta_data
+
+mean2 = alpha_post/(alpha_post+beta_post)
+mean2
+```
+Визуализируем распределения с единичными коэффициентами
+```{r, results='markup'}
+x <- seq(0, 1, length = 100)
+data_frame(p = rep(x, 3),
+           density = c(dbeta(x, 1, 1),
+                       dbeta(x, alpha_data, beta_data),
+                       dbeta(x, alpha_data + 1, beta_data + 1)),
+           type = rep(c("prior", "likelihood", "posterior"), each = 100))%>% 
+  ggplot(aes(x = p, y = density, color = type))+
+  geom_line()+
+  theme_bw()
+```
+
+### 1.5
+>Априорная вероятность 0.403 лежит в доверительном интервале (0.2828552; 0.4652979), и p_value > 0.5 и говорит о том, что различие между наблюдаемой и ожидаемой относительными частотами статистически незначимо, значит результаты эксперимента соответствуют ожиданиям -> принимаем нулевую гипотезу.
+>Если смоделировать эксперимент и провести его достаточно большое количество раз (1000), то на графике распределения >вероятности успеха видно, что вероятность 0.403 доволбно близка к наиболее вероятной вероятности.
+>Используя априорную вероятность и данные эксперимента, мы вывели апостеиорное распределение: его пик приходится примерно на 0.39 (вероятность успеха - 39 из 100). Допуская того, что мы не знаем априорную вероятность, мы приняли ее за единичную и вывели апостериорное распределение: среднее не сильно отличается от предыдущего - 0.37.
