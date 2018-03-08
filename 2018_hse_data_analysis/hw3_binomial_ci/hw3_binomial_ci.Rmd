@@ -1,0 +1,122 @@
+---
+title: "hw3_binomial_ci"
+author: "Melnik Anastasia"
+date: "06 03 2018"
+output: html_document
+---
+
+```{r, results='markup'}
+library(readr)
+library(tidyverse)
+library(bootstrap)
+library(mosaic)
+library(boot)
+```
+### 1.1
+Посчитайте среднее употребление слова “сэр” по каждой главе.
+```{r, results='markup'}
+wodehouse %>%
+  filter(word == "сэр") %>%
+  count(chapter) ->
+  wodehouse_sir_groupby_chapter
+
+wodehouse %>%
+  distinct(chapter, word) %>% 
+  count(chapter) ->
+  wodehouse_groupby_chapter
+
+wodehouse_sir_groupby_chapter$n_words = wodehouse_groupby_chapter$n
+wodehouse_sir_groupby_chapter$average = wodehouse_sir_groupby_chapter$n / wodehouse_sir_groupby_chapter$n_words
+subset(wodehouse_sir_groupby_chapter, select = c(chapter, average))
+```
+
+Посчитайте grand mean.
+```{r, results='markup'}
+wodehouse_sir_groupby_chapter %>% 
+  summarise(g_mean = mean(average)) ->
+  grand_mean
+grand_mean
+```
+### 1.2
+Посчитайте бутстрэпом доверительный интервал для средней доли слова “сэр” в главах романа.
+```{r, results='markup'}
+wodehouse_sir_groupby_chapter_bs <- bootstrap(wodehouse_sir_groupby_chapter$average, nboot = 10000, theta = mean)$thetastar
+wodehouse_sir_groupby_chapter_bs_df <- data_frame(means = wodehouse_sir_groupby_chapter_bs) 
+
+wodehouse_sir_groupby_chapter_bs_df %>%
+  summarise(mean = mean(means),
+            q1 = quantile(means, 0.025),
+            q2 = quantile(means, 0.975)) ->
+  wodehouse_bs_stats
+
+print("Доверительный интервал bootstrap средней доли слова 'сэр' на основе романа П. Г. Вудхауза “Фамильная честь Вустеров”: ")
+wodehouse_bs_stats
+```
+### 1.3
+Посчитайте биномиальный доверительный интервал употребления слова “сэр” в каждой главе.
+```{r, results='markup'}
+df <- wodehouse_sir_groupby_chapter
+low_ci = binom.test(x = df$n, n = df$n_words, ci.method = "Clopper-Pearson")$conf.int[1]
+up_ci = binom.test(x = df$n, n = df$n_words, ci.method = "Clopper-Pearson")$conf.int[2]
+wodehouse_binom_stats <- data_frame(low_ci = low_ci, up_ci = up_ci) 
+
+subset(wodehouse_sir_groupby_chapter, select = -c(average)) %>% 
+  group_by(chapter) %>%
+  mutate(low_ci = binom.test(x = n, n = n_words, ci.method = "Clopper-Pearson")$conf.int[1],
+         up_ci = binom.test(x = n, n = n_words, ci.method = "Clopper-Pearson")$conf.int[2]) ->
+  binom_intervals
+```
+Выведите главу с максимальным из интервалов.
+```{r, results='markup'}
+binom_intervals[which.max(binom_intervals$up_ci - binom_intervals$low_ci),]['chapter']
+```
+### 1.4
+Посчитайте байесовский биномиальный доверительный интервал употребления слова “сэр” в каждой главе.
+```{r, results='markup'}
+mu <- mean(wodehouse_sir_groupby_chapter$average)
+var <- var(wodehouse_sir_groupby_chapter$average)
+alpha0 <- ((1 - mu) / var - 1 / mu) * mu ^ 2
+beta0 <- alpha0 * (1 / mu - 1)
+alpha0
+
+wodehouse_sir_groupby_chapter %>% 
+  mutate(alpha_post = n+alpha0,
+         beta_post = n_words-n+beta0,
+         average_post = alpha_post/(alpha_post+beta_post),
+         cred_int_l = qbeta(.025, alpha_post, beta_post),
+         cred_int_h = qbeta(.975, alpha_post, beta_post)) ->
+  posterior
+
+subset(posterior, select = c(chapter, cred_int_l, cred_int_h))
+```
+Выведите главу с максимальным из интервалов.
+```{r, results='markup'}
+posterior[which.max(posterior$cred_int_h - posterior$cred_int_l),]['chapter']
+```
+### 1.5
+Посчитайте биномиальный доверительный интервал употребления слова “сэр” в каждой главе.
+```{r, results='markup'}
+df <- wodehouse_sir_groupby_chapter
+low_ci = binom.test(x = df$n, n = df$n_words, ci.method = "Clopper-Pearson")$conf.int[1]
+up_ci = binom.test(x = df$n, n = df$n_words, ci.method = "Clopper-Pearson")$conf.int[2]
+wodehouse_binom_stats <- data_frame(low_ci = low_ci, up_ci = up_ci) 
+
+subset(wodehouse_sir_groupby_chapter, select = -c(average)) %>% 
+  group_by(chapter) %>%
+  mutate(low_ci = binom.test(x = n, n = n_words, ci.method = "Clopper-Pearson")$conf.int[1],
+         up_ci = binom.test(x = n, n = n_words, ci.method = "Clopper-Pearson")$conf.int[2]) ->
+  binom_intervals
+```
+Выведите главу с минимальным из интервалов.
+```{r, results='markup'}
+binom_intervals[which.min(binom_intervals$up_ci - binom_intervals$low_ci),]['chapter']
+```
+### 1.6
+Посчитайте байесовский биномиальный доверительный интервал употребления слова “сэр” в каждой главе.
+Выведите главу с минимальным из интервалов.
+```{r, results='markup'}
+posterior[which.min(posterior$cred_int_h - posterior$cred_int_l),]['chapter']
+```
+### 1.7
+В среднем по 10 главам количество употреблений слова "сэр" равно примерно 0.012 (1% от главы). Самое большое, сильно отличающееся от других, количество употреблений в главе 14 (3,3% главы), следом за ней идет глава 7 (1,3% главы), количество употреблений слова "сэр" в ней почти в два раза меньше, чем в главе 14.  Самое маленькое, сильно отличающееся от других, количество употреблений в главе 4 (0,2% главы), следом за ней идет глава 1 (0,7% главы), количество употреблений слова "сэр" в ней почти в три раза больше, чем в главе 4.
+Доверительный интервал bootstrap средней доли слова 'сэр', полученный на основе результатов 1000 экспериментов, лежит между 0.007560221	и 0.01789748, и в него попадают все главы, кроме глав 14 и 4. Биномиальный и байесовский биномиальный тесты дают похожие результаты: минимальный доверительный интервал в обоих случаях также имеет глава 4, но максимальный интервал оценок различается: согласно биномиальному тесту его имеет глава 12, согласно фреквентистскому - 14.
